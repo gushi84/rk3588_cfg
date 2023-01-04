@@ -1,0 +1,184 @@
+# Test jobs
+build-each-commit-gcc:
+  stage: test
+  image: registry.gitlab.com/xen-project/xen/${CONTAINER}
+  variables:
+    CONTAINER: debian:stretch
+    XEN_TARGET_ARCH: x86_64
+    CC: gcc
+  script:
+    - BASE=${BASE_SHA:-${CI_COMMIT_BEFORE_SHA}} TIP=${TIP_SHA:-${CI_COMMIT_SHA}} ./automation/gitlab-ci/build-each-commit.sh 2>&1 | tee ../build-each-commit-gcc.log
+    - mv ../build-each-commit-gcc.log .
+  artifacts:
+    paths:
+      - '*.log'
+    when: always
+  dependencies: []
+  tags:
+    - x86_64
+  except:
+    - master
+    - smoke
+    - /^coverity-tested\/.*/
+    - /^stable-.*/
+
+qemu-alpine-arm64-gcc:
+  stage: test
+  image: registry.gitlab.com/xen-project/xen/${CONTAINER}
+  variables:
+    CONTAINER: debian:unstable-arm64v8
+  script:
+    - ./automation/scripts/qemu-alpine-arm64.sh 2>&1 | tee qemu-smoke-arm64.log
+  dependencies:
+    - alpine-3.12-gcc-arm64
+    - alpine-3.12-arm64-rootfs-export
+    - kernel-5.9.9-arm64-export
+    - qemu-system-aarch64-5.2.0-arm64-export
+  artifacts:
+    paths:
+      - smoke.serial
+      - '*.log'
+    when: always
+  tags:
+    - arm64
+  except:
+    - master
+    - smoke
+    - /^coverity-tested\/.*/
+    - /^stable-.*/
+
+qemu-alpine-x86_64-gcc:
+  stage: test
+  image: registry.gitlab.com/xen-project/xen/${CONTAINER}
+  variables:
+    CONTAINER: debian:stretch
+  script:
+    - ./automation/scripts/qemu-alpine-x86_64.sh 2>&1 | tee qemu-smoke-x86_64.log
+  dependencies:
+    - alpine-3.12-gcc
+    - alpine-3.12-rootfs-export
+    - kernel-5.10.74-export
+  artifacts:
+    paths:
+      - smoke.serial
+      - '*.log'
+    when: always
+  tags:
+    - x86_64
+  except:
+    - master
+    - smoke
+    - /^coverity-tested\/.*/
+    - /^stable-.*/
+
+qemu-smoke-arm64-gcc:
+  stage: test
+  image: registry.gitlab.com/xen-project/xen/${CONTAINER}
+  variables:
+    CONTAINER: debian:unstable-arm64v8
+  script:
+    - ./automation/scripts/qemu-smoke-arm64.sh 2>&1 | tee qemu-smoke-arm64.log
+  dependencies:
+    - debian-unstable-gcc-arm64
+    - kernel-5.9.9-arm64-export
+    - qemu-system-aarch64-5.2.0-arm64-export
+  artifacts:
+    paths:
+      - smoke.serial
+      - '*.log'
+    when: always
+  tags:
+    - arm64
+  except:
+    - master
+    - smoke
+    - /^coverity-tested\/.*/
+    - /^stable-.*/
+
+qemu-smoke-x86-64-gcc:
+  stage: test
+  image: registry.gitlab.com/xen-project/xen/${CONTAINER}
+  variables:
+    CONTAINER: debian:stretch
+  script:
+    - ./automation/scripts/qemu-smoke-x86-64.sh pv 2>&1 | tee qemu-smoke-x86-64.log
+  artifacts:
+    paths:
+      - smoke.serial
+      - '*.log'
+    when: always
+  dependencies:
+    - debian-stretch-gcc-debug
+  tags:
+    - x86_64
+  except:
+    - master
+    - smoke
+    - /^coverity-tested\/.*/
+    - /^stable-.*/
+
+qemu-smoke-x86-64-clang:
+  stage: test
+  image: registry.gitlab.com/xen-project/xen/${CONTAINER}
+  variables:
+    CONTAINER: debian:stretch
+  script:
+    - ./automation/scripts/qemu-smoke-x86-64.sh pv 2>&1 | tee qemu-smoke-x86-64.log
+  artifacts:
+    paths:
+      - smoke.serial
+      - '*.log'
+    when: always
+  dependencies:
+    - debian-unstable-clang-debug
+  tags:
+    - x86_64
+  except:
+    - master
+    - smoke
+    - /^coverity-tested\/.*/
+    - /^stable-.*/
+
+qemu-smoke-x86-64-gcc-pvh:
+  stage: test
+  image: registry.gitlab.com/xen-project/xen/${CONTAINER}
+  variables:
+    CONTAINER: debian:stretch
+  script:
+    - ./automation/scripts/qemu-smoke-x86-64.sh pvh 2>&1 | tee qemu-smoke-x86-64.log
+  artifacts:
+    paths:
+      - smoke.serial
+      - '*.log'
+    when: always
+  dependencies:
+    - debian-stretch-gcc-debug
+  tags:
+    - x86_64
+  except:
+    - master
+    - smoke
+    - /^coverity-tested\/.*/
+    - /^stable-.*/
+
+qemu-smoke-x86-64-clang-pvh:
+  stage: test
+  image: registry.gitlab.com/xen-project/xen/${CONTAINER}
+  variables:
+    CONTAINER: debian:stretch
+  script:
+    - ./automation/scripts/qemu-smoke-x86-64.sh pvh 2>&1 | tee qemu-smoke-x86-64.log
+  artifacts:
+    paths:
+      - smoke.serial
+      - '*.log'
+    when: always
+  dependencies:
+    - debian-unstable-clang-debug
+  tags:
+    - x86_64
+  except:
+    - master
+    - smoke
+    - /^coverity-tested\/.*/
+    - /^stable-.*/

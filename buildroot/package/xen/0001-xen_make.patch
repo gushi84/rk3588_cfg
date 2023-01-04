@@ -1,0 +1,75 @@
+diff -uNr xen-4.15.0/tools/libs/libs.mk xen-4.15.0-modify/tools/libs/libs.mk
+--- xen-4.15.0/tools/libs/libs.mk	2021-04-07 01:14:18.000000000 +0800
++++ xen-4.15.0-modify/tools/libs/libs.mk	2022-11-28 16:52:26.431145069 +0800
+@@ -29,7 +29,8 @@
+ comma:= ,
+ empty:=
+ space:= $(empty) $(empty)
+-PKG_CONFIG ?= $(LIB_FILE_NAME).pc
++#PKG_CONFIG ?= $(LIB_FILE_NAME).pc
++PKG_CONFIG := $(LIB_FILE_NAME).pc
+ PKG_CONFIG_NAME ?= Xen$(LIBNAME)
+ PKG_CONFIG_DESC ?= The $(PKG_CONFIG_NAME) library for Xen hypervisor
+ PKG_CONFIG_VERSION := $(MAJOR).$(MINOR)
+@@ -45,6 +46,14 @@
+ endif
+ 
+ PKG_CONFIG_LOCAL := $(PKG_CONFIG_DIR)/$(PKG_CONFIG)
++$(warning $(PKG_CONFIG_LOCAL))
++$(warning "libs.mk1=========")
++$(warning $(PKG_CONFIG_NAME))
++$(warning $(PKG_CONFIG_DESC))
++$(warning $(PKG_CONFIG_DIR))
++$(warning "libs.mk2=========")
++$(warning $(PKG_CONFIG))
++$(warning "libs.mk3=========")
+ 
+ LIBHEADER ?= $(LIB_FILE_NAME).h
+ LIBHEADERS = $(foreach h, $(LIBHEADER), $(XEN_INCLUDE)/$(h))
+diff -uNr xen-4.15.0/tools/Makefile xen-4.15.0-modify/tools/Makefile
+--- xen-4.15.0/tools/Makefile	2021-04-07 01:14:18.000000000 +0800
++++ xen-4.15.0-modify/tools/Makefile	2022-11-28 16:52:26.531127295 +0800
+@@ -242,8 +242,42 @@
+ 		-DXC_WANT_COMPAT_GNTTAB_API=1 \
+ 		-DXC_WANT_COMPAT_MAP_FOREIGN_API=1 \
+ 		-DXC_WANT_COMPAT_DEVICEMODEL_API=1 \
++		-I$(XEN_ROOT)/tools/include \
++		-I$(XEN_ROOT)/tools/xenstore/include \
+ 		$(EXTRA_CFLAGS_QEMU_XEN)" \
+-		--extra-ldflags="$(QEMU_UPSTREAM_RPATH)" \
++		--extra-ldflags="-L$(XEN_ROOT)/tools/xenstore \
++		-L$(XEN_ROOT)/tools/libs/toolcore \
++		-L$(XEN_ROOT)/tools/libs/evtchn \
++		-L$(XEN_ROOT)/tools/libs/toollog \
++		-L$(XEN_ROOT)/tools/libs/call \
++		-L$(XEN_ROOT)/tools/libs/gnttab \
++		-L$(XEN_ROOT)/tools/libs/foreignmemory \
++		-L$(XEN_ROOT)/tools/libs/devicemodel \
++		-L$(XEN_ROOT)/tools/libs/ctrl \
++		-L$(XEN_ROOT)/tools/libs/guest \
++		-L$(XEN_ROOT)/tools/libs/hypfs \
++		-L$(XEN_ROOT)/tools/libs/store \
++		-L$(XEN_ROOT)/tools/libs/stat \
++		-L$(XEN_ROOT)/tools/libs/vchan \
++		-L$(XEN_ROOT)/tools/libs/light \
++		-L$(XEN_ROOT)/tools/libs/util \
++		-Wl,-rpath-link=$(XEN_ROOT)/tools/xenstore \
++		-Wl,-rpath-link=$(XEN_ROOT)/tools/libs/toolcore \
++		-Wl,-rpath-link=$(XEN_ROOT)/tools/libs/evtchn \
++		-Wl,-rpath-link=$(XEN_ROOT)/tools/libs/toollog \
++		-Wl,-rpath-link=$(XEN_ROOT)/tools/libs/call \
++		-Wl,-rpath-link=$(XEN_ROOT)/tools/libs/gnttab \
++		-Wl,-rpath-link=$(XEN_ROOT)/tools/libs/foreignmemory \
++		-Wl,-rpath-link=$(XEN_ROOT)/tools/libs/devicemodel \
++		-Wl,-rpath-link=$(XEN_ROOT)/tools/libs/ctrl \
++		-Wl,-rpath-link=$(XEN_ROOT)/tools/libs/guest \
++		-Wl,-rpath-link=$(XEN_ROOT)/tools/libs/hypfs \
++		-Wl,-rpath-link=$(XEN_ROOT)/tools/libs/store \
++		-Wl,-rpath-link=$(XEN_ROOT)/tools/libs/stat \
++		-Wl,-rpath-link=$(XEN_ROOT)/tools/libs/vchan \
++		-Wl,-rpath-link=$(XEN_ROOT)/tools/libs/light \
++		-Wl,-rpath-link=$(XEN_ROOT)/tools/libs/util \
++		$(QEMU_UPSTREAM_RPATH)" \
+ 		--bindir=$(LIBEXEC_BIN) \
+ 		--datadir=$(SHAREDIR)/qemu-xen \
+ 		--localstatedir=$(localstatedir) \

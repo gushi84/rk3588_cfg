@@ -1,0 +1,27 @@
+# SPDX-License-Identifier: GPL-2.0
+# ==========================================================================
+# Cleaning up
+# ==========================================================================
+
+clean::
+
+include $(BASEDIR)/scripts/Kbuild.include
+
+include Makefile
+
+# Figure out what we need to clean from the various variables
+# ==========================================================================
+subdir-all := $(subdir-y) $(subdir-n) $(subdir-) \
+              $(patsubst %/,%, $(filter %/, $(obj-y) $(obj-n) $(obj-)))
+
+.PHONY: clean
+clean:: $(subdir-all) ;
+
+# Descending
+# ---------------------------------------------------------------------------
+
+PHONY += $(subdir-all)
+$(subdir-all):
+	$(MAKE) $(clean) $@
+
+.PHONY: $(PHONY)
