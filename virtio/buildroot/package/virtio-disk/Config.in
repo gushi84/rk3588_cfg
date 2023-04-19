@@ -1,0 +1,5 @@
+config BR2_PACKAGE_VIRTIO_DISK
+	bool "virtio disk"
+	help
+	  This package builds the virtio disk backend.
+
