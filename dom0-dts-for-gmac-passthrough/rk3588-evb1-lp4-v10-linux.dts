@@ -1,0 +1,66 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Copyright (c) 2021 Rockchip Electronics Co., Ltd.
+ *
+ */
+
+/dts-v1/;
+
+#include "rk3588-evb1-lp4.dtsi"
+#include "rk3588-evb1-imx415.dtsi"
+#include "rk3588-linux.dtsi"
+
+/ {
+	model = "rk3588 Development Board";
+	chosen {
+		bootargs = "dom0_mem=2048M pci-passthrough=on console=dtuart dtuart=serial0 dom0_max_vcpus=4 bootscrub=0 flask_enforcing=1 gnttab_max_frames=64";
+		xen,dom0-bootargs = "console=hvc0 root=PARTUUID=614e0000-0000 rootfstype=ext4 iommu=soft loglevel=7 earlyprintk=xen rw rootwait";
+		modules {
+			#address-cells = <2>;
+			#size-cells = <2>;
+
+			module@1 {
+				compatible = "xen,linux-zimage", "xen,multiboot-module";
+				reg = <0x0 0x03F80000 0x0 0x02000000>;
+			};
+		};
+	};
+
+	aliases {
+		serial0 = &uart2;
+	};
+};
+
+&uart2 {
+       status = "okay";
+};
+
+&route_hdmi0 {
+	status = "okay";
+	connect = <&vp0_out_hdmi0>;
+	/delete-property/ force-output;
+	/delete-node/ force_timing;
+};
+
+&route_hdmi1 {
+	status = "okay";
+	connect = <&vp1_out_hdmi1>;
+	/delete-property/ force-output;
+	/delete-node/ force_timing;
+};
+
+&vcc_1v8_s0 {
+	/delete-property/ regulator-state-mem;
+	regulator-state-mem {
+		regulator-on-in-suspend;
+		regulator-suspend-microvolt = <1800000>;
+	};
+};
+
+&vcc_3v3_s0 {
+	/delete-property/ regulator-state-mem;
+	regulator-state-mem {
+		regulator-on-in-suspend;
+		regulator-suspend-microvolt = <3300000>;
+	};
+};
